@@ -1,6 +1,7 @@
 ---
 title: 读书笔记：JavaScript 设计模式
 date: 2017-05-06 14:20:41
+desc: JavaScript 设计模式 读书笔记 MVC MVVM
 ---
 
 《Learning JavaScript Design Patterns》

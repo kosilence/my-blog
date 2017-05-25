@@ -1,6 +1,7 @@
 ---
 title: 理解 RESTful 风格
 date: 2017-05-19 16:32:40
+desc: Restful API 前后端分离 服务器端
 ---
 
 前后端分离的大趋势下

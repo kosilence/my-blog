@@ -1,6 +1,7 @@
 ---
 title: 3D-Photo 动画效果的实现
 date: 2017-02-07 11:46:43
+desc: Web Video To Images 移动端 屏幕翻转事件
 ---
 
 Video 转换 Images
