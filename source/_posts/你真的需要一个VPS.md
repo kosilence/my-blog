@@ -15,7 +15,7 @@ VPS：我要给你整个世界！
 #### 选择公司
 国内：阿云里、腾讯云、景安
 
-国外：Vultr、Linode、SugarHosts、DigitalOcean
+国外：[Vultr](http://www.vultr.com/?ref=7099343)、[Linode](https://www.linode.com/?r=b9e1ce1ebdbb3b17ce134eb53a5f1f6437f54b54)、[SugarHosts](http://www.sugarhosts.com/zh-cn/)、[DigitalOcean](https://www.digitalocean.com/)
 
 **大部分公司都有优惠活动，买之前记得搜索相关资料哦**
 ***
