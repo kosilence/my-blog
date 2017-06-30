@@ -12,6 +12,8 @@ desc: Restful API 前后端分离 服务器端
 
 <!--more-->
 
+-------
+
 ## 理解 RESTful 风格
 ***
 Fielding 将他对互联网软件的架构原则，定名为 REST ，即 Representational State Transfer 的缩写。这个词组可以翻译为"表现层状态转化"。

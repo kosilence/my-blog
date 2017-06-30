@@ -12,6 +12,8 @@ desc: JavaScript 设计模式 读书笔记 MVC MVVM
 
 <!--more-->
 
+-------
+
 ## 第一章 介绍
 
 ## 第二章 什么是模式

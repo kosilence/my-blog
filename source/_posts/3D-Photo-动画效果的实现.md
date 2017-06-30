@@ -11,7 +11,11 @@ Video 转换 Images
 实现动态切换的3dPhoto效果
 
 <!--more-->
+
+-------
+
 ## 实现方法的选择
+
 #### Fyuse
 
 1. video 转换为 images，格式为二进制数据，顺序存放数据库内
@@ -33,8 +37,11 @@ Video 转换 Images
 4. js控制图片切换顺序
 
 ## 移动端横竖屏翻转
+
 假如页面设计为仅展示横屏模式，需要对页面横竖屏翻转做特殊处理，实现方法根据不同的设备类型略有不同
+
 #### 样式处理
+
 媒体查询，获取设备横竖屏状态，设置body样式翻转角度
 
 ```
@@ -59,6 +66,7 @@ Video 转换 Images
 ```
 
 #### 事件绑定
+
 Firefox 对于`onorientationchange`事件的支持不好，因此使用媒体查询属性替代实现
 Iphone 设备完全支持`onorientationchange`事件
 Android 设备使用`resize`事件来监听屏幕翻转
@@ -124,6 +132,7 @@ function delayRander() {
 ```
 
 #### 补充
+
 Iphone Safari 浏览器横屏状态隐藏搜索栏的方法
 
 ```
@@ -134,6 +143,7 @@ Iphone Safari 浏览器横屏状态隐藏搜索栏的方法
 ```
 
 ## 重力感应切换图片
+
 #### 事件绑定
 
 ```
@@ -167,6 +177,7 @@ function shakeEventHandler(event) {
 ```
 
 #### 优化
+
 低通滤波优化切换稳定性，，降低由于微小抖动引起的切换
 
 ```
