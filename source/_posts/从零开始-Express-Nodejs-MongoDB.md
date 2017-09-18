@@ -10,3 +10,8 @@ desc:
 
 ## 
 
+JacksonTian/eventproxy
+
+caolan/async
+
+

@@ -168,6 +168,13 @@ $ curl -sSL https://get.docker.com/ | sh
 ```
 $ docker --version
 ```
+
+然后开启 `docker`
+
+```
+$ service docker start
+```
+
 OK，然后让我们去`docker hub`找一找`shadowsocks`
 
 ![](http://ww1.sinaimg.cn/large/9eb6a82aly1ffvhr2q0x5j20zu08wwf9.jpg)
