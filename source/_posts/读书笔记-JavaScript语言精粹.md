@@ -118,7 +118,86 @@ JavaScript 是一门基于**原型继承**的语言。
 
 通过给构造器传递一个 `JSON` 对象，让代码更易阅读，而且不用顾虑多个参数的顺序。
 
+#### 3、原型
 
+一个新对象可以继承一个旧对象的属性。
 
+`Object.create()` 方法规范化了原型式继承。
+
+```
+var person = {
+    name: "Nice",
+    friends: ["A", "B"]
+};
+
+var anotherPerson = Object.create(person);
+anotherPerson.name = "Linda";
+anotherPerson.friends.push("C");
+
+console.log(anotherPerson.friends); // ["A", "B", "C"]
+```
+
+#### 4、函数化
+
+从构造一个可以生成对象的函数开始，在这个对象A内部拥有一些变量（可以看做私有），同时内部还拥有一个对象B，对象B可以通过自己内部的特权方法访问对象A内的私有变量和方法，最后我们返回对象B。
+
+1. 创建一个新对象。方法可以是任意的：对象字面量、`new` 构造器函数、`Object.create()` 构造一个已经存在的对象的新实例、其他任何可以返回一个对象的函数。
+2. 有选择地定义私有实例变量和方法。`var` 语句定义的普通变量。
+3. 给这个新对象扩充方法。这些方法拥有特权去访问参数，以及上一步中定义的变量。
+4. 返回那个新对象。
+
+函数化模式有很大的灵活性。它相比伪类模式不仅带来的工作更少，还让我们得到更好的封装和信息隐藏，以及访问父类方法的能力。
+
+#### 5、部件
+
+没懂这个是干啥的。
+
+## 第六章 数组
+
+JavaScript 提供了一种类数组特性的对象，它的属性的检索和更新的方式与对象一模一样，只不过多一个可以用整数作为属性名的特性。数组有自己的字面量格式。数组也有一套非常有用的内置方法。
+
+#### 1、长度 Length
+
+`length` 属性的值是这个数组的最大整数属性名加上 `1`，它不一定等于数组里的属性的个数。
+
+```
+var myArray = [];
+myArray.length; // 0
+
+myArray[10000] = true;
+myArray.length; // 10001
+```
+
+可以设置 `length` 的值。设置更大的 `length` 不会给数组分配更多的空间，而把 `length` 设小，将导致所有下标大于等于新的 `length` 的属性被删除。
+
+#### 2、枚举
+
+因为 JavaScript 的数组其实就是对象，所以 `for in` 语句可以用来遍历一个数组的全部属性。然而 `for in` 无法保证属性的顺序。此外，还有可能从原型链中得到意外的属性错误。
+
+因此，推荐使用常规的 `for` 循环语句可以有效避免这些问题。
+
+#### 3、判断数组和对象
+
+```
+// 不同浏览器兼容性不好
+var is_array = function(value) {
+    return value && typeof value === 'object' && value.constructor === Array;
+}
+
+// 一种更好的方法
+var is_array = function(value) {
+    return Object.prototype.toString.apply(value) === '[object Array]';
+};
+```
+
+## 第七章 正则表达式
+
+#### 1、结构
+
+有两种方法来创建一个 `RegExp` 对象。优先考虑正则表达式字面量方法。
+
+```
+var my_regexp = /^([0-9]{0-3})$/;
+```
 
 
