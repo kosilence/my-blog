@@ -224,6 +224,8 @@ $ docker ps
 2. 需要 Linux 内核版本大于等于**4.9**
 3. 某些厂商的Linux内核是改造过的，可能需要先把VPS配置为自定义内核，一般厂商会有此类情况的说明文档，例如 (**Linode、DigitalOcean**)
 
+强烈推荐： [一键安装最新内核并开启 BBR 脚本 -- 秋水逸冰](https://teddysun.com/489.html)
+
 **Debian 8 / Ubuntu 14**
 
 如果内核低于**4.9**的话，升级内核至 **4.10**

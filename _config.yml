@@ -74,7 +74,7 @@ archive_generator:
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: rsync
-  host: 172.104.65.230
+  host: 45.77.26.38
   user: root
   root: /var/www/blog
   port: 22
