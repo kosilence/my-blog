@@ -1,5 +1,5 @@
 ---
-title: OWASP 2017 Web 应用程序十大安全风险(译)
+title: OWASP 2017 Web 应用程序十大安全风险（译）
 date: 2017-12-11 22:01:18
 desc: OWASP 安全 漏洞 Web 2017 Top10
 ---
@@ -10,24 +10,24 @@ OWASP 发布 Web 应用程序十大安全风险，至今为止应该有三次更
 
 正好工作上在讨论 2013 年的版本，此篇文章用来翻译 2017 年的版本。
 
-见识一下这排名前十的 Web 应用安全风险。
+深入了解这排名前十的 Web 应用安全风险。
 
 <!--more-->
 
 ## Top 10 应用安全风险列表
 
-1. [A1-注入](#A1-注入)
-2. [A2-失效的身份认证](A2-失效的身份认证)
-3. [A3-敏感数据泄露](#A3-敏感数据泄露)
-4. [A4-XML 外部实体 (XXE)](#A4-XML 外部实体 (XXE))
-5. [A5-失效的访问控制](#A5-失效的访问控制)
-6. [A6-安全配置错误](#A6-安全配置错误)
-7. [A7-跨站脚本 (XSS)](#A7-跨站脚本 (XSS))
-8. [A8-不安全的反序列化](#A8-不安全的反序列化)
-9. [A9-使用含有已知漏洞的组件](#A9-使用含有已知漏洞的组件)
-10. [A10-不足的日志记录和监控](#A10-不足的日志记录和监控)
+- [A1-注入-Injection](#A1-注入-Injection)
+- [A2-失效的身份认证-Broken-Authentication](A2-失效的身份认证-Broken-Authentication)
+- [A3-敏感数据泄露-Sensitive-Data-Exposure](#A3-敏感数据泄露-Sensitive-Data-Exposure)
+- [A4-XML-外部实体-External-Entities-(XXE)](#A4-XML-外部实体-External-Entities)
+- [A5-失效的访问控制-Broken-Access-Control](#A5-失效的访问控制-Broken-Access-Control)
+- [A6-安全配置错误-Security-Misconfiguration](#A6-安全配置错误-Security-Misconfiguration)
+- [A7-跨站脚本-Cross-Site-Scripting-(XSS)](#A7-跨站脚本-Cross-Site-Scripting)
+- [A8-不安全的反序列化-Insecure-Deserialization](#A8-不安全的反序列化-Insecure-Deserialization)
+- [A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities](#A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities)
+- [A10-不足的日志记录和监控-Insufficient_Logging&Monitoring](#A10-不足的日志记录和监控-Insufficient_Logging&Monitoring)
 
-## A1-注入
+## A1-注入-Injection
 
 > 注入缺陷，例如 SQL，NoSQL，OS 和 LDAP 注入，一般指不受信任的数据被伪装成命令或者查询语句的一部分，发送至解析器后发生了执行的过程。攻击者的恶意数据能够欺骗解释器在未被授权的情况下执行非预期代码或者访问数据。
 
@@ -68,7 +68,7 @@ Query HQLQuery = session.createQuery("FROM accounts WHERE custID='" + request.ge
 http://example.com/app/accountView?id=' or '1'='1
 ```
 
-这样变动意味着这两个查询语句俊辉返回用户表中的所有记录。更多危险的攻击可能篡改或者删除数据，甚至存储过程被调用。
+这样变动意味着这两个查询语句均会返回用户表中的所有记录。更多危险的攻击可能篡改或者删除数据，甚至存储过程被调用。
 
 #### 如何防御
 
