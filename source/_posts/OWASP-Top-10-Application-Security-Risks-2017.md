@@ -1,3 +1,13 @@
+---
+
+title: OWASP 2017 Web 应用程序十大安全风险（译）
+
+date: 2017-12-11 22:01:18
+
+desc: OWASP 安全 漏洞 Web 2017 Top10
+
+---
+
 原文地址：[OWASP Top 10 Application Security Risks - 2017](https://www.owasp.org/index.php/Top_10_2017-Top_10)
 
 OWASP 发布 Web 应用程序十大安全风险，至今为止应该有三次更新：2010年 / 2013年 / 2017年。
@@ -11,7 +21,7 @@ OWASP 发布 Web 应用程序十大安全风险，至今为止应该有三次更
 ## Top 10 应用安全风险列表
 
 - [A1-注入-Injection](#A1-注入-Injection)
-- [A2-失效的身份认证-Broken-Authentication](A2-失效的身份认证-Broken-Authentication)
+- [A2-失效的身份认证-Broken-Authentication](#A2-失效的身份认证-Broken-Authentication)
 - [A3-敏感数据泄露-Sensitive-Data-Exposure](#A3-敏感数据泄露-Sensitive-Data-Exposure)
 - [A4-XML-外部实体-External-Entities-(XXE)](#A4-XML-外部实体-External-Entities)
 - [A5-失效的访问控制-Broken-Access-Control](#A5-失效的访问控制-Broken-Access-Control)
@@ -20,8 +30,6 @@ OWASP 发布 Web 应用程序十大安全风险，至今为止应该有三次更
 - [A8-不安全的反序列化-Insecure-Deserialization](#A8-不安全的反序列化-Insecure-Deserialization)
 - [A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities](#A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities)
 - [A10-不足的日志记录和监控-Insufficient_Logging&Monitoring](#A10-不足的日志记录和监控-Insufficient_Logging&Monitoring)
-
-------
 
 ## A1-注入-Injection
 
@@ -96,8 +104,6 @@ http://example.com/app/accountView?id=' or '1'='1
 - [CWE-917: Expression Language Injection](https://cwe.mitre.org/data/definitions/917.html)
 - [PortSwigger: Server-side template injection](https://portswigger.net/kb/issues/00101080_serversidetemplateinjection)
 
-------
-
 ## A2-失效的身份认证-Broken-Authentication
 
 > 应用程序错误地使用身份认证以及会话管理，令攻击者能够破译密码，密匙，会话凭证或者其他可能的开发缺陷暂时性或者永久的伪装成用户的身份。
@@ -161,8 +167,4 @@ http://example.com/app/accountView?id=' or '1'='1
 - [NIST 800-63b: 5.1.1 Memorized Secrets](https://pages.nist.gov/800-63-3/sp800-63b.html#memsecret) - for thorough, modern, evidence-based advice on authentication.
 - [CWE-287: Improper Authentication](https://cwe.mitre.org/data/definitions/287.html)
 - [CWE-384: Session Fixation](https://cwe.mitre.org/data/definitions/384.html)
-
-------
-
-
 
