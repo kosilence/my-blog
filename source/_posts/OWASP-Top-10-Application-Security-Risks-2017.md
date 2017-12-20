@@ -168,3 +168,84 @@ http://example.com/app/accountView?id=' or '1'='1
 - [CWE-287: Improper Authentication](https://cwe.mitre.org/data/definitions/287.html)
 - [CWE-384: Session Fixation](https://cwe.mitre.org/data/definitions/384.html)
 
+
+## A3-敏感数据泄露-Sensitive-Data-Exposure
+
+> 许多 Web 应用和 API 接口不重视敏感数据的保护，比如资金数据、健康数据和个人身份数据。攻击者可能窃取或者修改这些不设防的数据，用作信用卡诈骗、身份盗用或者其他犯罪行为。未特别保护的敏感数据容易遭到破坏，这些数据包括传输中的数据、存储的数据以及浏览器中的交互数据。
+
+#### 威胁来源、弱点以及影响
+
+和密码的字典攻击不同，当数据传输或者从浏览器中，攻击者窃取密匙、执行中间人攻击、或者从服务器上偷取清晰的文本数据。这通常需要手动去攻击。早前检索的密码数据库可能通过 GPUs 暴力破解。
+
+纵观最近几年，这是最常见的和最有影响力的攻击。最常见的漏洞竟然只是没有加密敏感数据。在数据加密中，常见问题是弱密匙的生成和管理，易破解的算法、协议和密码经常被使用，尤其是使用弱的密码哈希存储技术。服务器端去检测传输中的数据弱点很容易，但是检测存储数据的弱点却非常困难。
+
+失败常常会波及本应受到保护的数据。一般来说，包含敏感个人信息数据的信息，例如健康记录、证书文件、个人信息以及信用卡信息，这些信息受到相关法律和条例的保护，例如 EU GDPR 或者当地法律法规。
+
+#### 你的应用是脆弱的吗？
+
+第一件事情是确认哪些数据需要在传输和存储过程中得到保护。例如：密码、信用卡号、健康记录、个人信息和商业秘密需要额外的保护，特别是那些受到法律的保护或者金融数据保护的敏感信息。对于以上这些数据：
+
+* 是否有数据通过明文传递？需要注意的协议有 HTTP、SMTP 和 FTP。外部网络传输是特别危险的。对所有内部通信进行验证，例如：负载平衡器、Web 服务器或后端系统之间的通信。
+* 是否有任何陈旧的或者脆弱的密码加密算法使用了默认配置或者过时的代码？
+* 是否使用了默认的密匙，是否生成或者复用了脆弱的加密密匙，或者缺少恰当的密匙管理和轮换？
+* 加密是否是强制执行？是否遗漏了用户客户端（浏览器）的安全配置或者头部信息？
+* 客户端（APP，邮件客户端）是否验证了收到的服务器证书是否可用？
+
+#### 攻击案例场景
+
+**例子一**：应用在数据库中使用自动算法加密了信用卡数字。然而在取出数据时，又自动解密了数据，这就容许了 SQL 注入漏洞来获取明文状态的用户信用卡数字。
+
+**例子二**：网站没有为所有的页面使用或者执行 TLS 加密，或者仅支持弱加密算法。攻击者监控网络传输数据（例如在一个不安全的网络环境中），将 HTTPS 降级为 HTTP 传输，然后拦截了请求数据，从而偷取用户的会话 cookie。攻击者重新使用这个 cookie，伪造用户会话，获取或者修改用户的私人数据。除此之外，攻击者还可以篡改所有传输数据，例如资金的接收方等等。
+
+**例子三**：密码数据库使用了未加盐或者简单的哈希算法来存储所有人的密码。一个文件上传的漏洞可以使攻击者取出密码数据库的数据。所有未加盐的哈希算法均可以被通过彩虹表暴力破解的方式破解。而简单的或者快速哈希算法也可以被 GPU  的方式破解，即使它们被加盐加密过。
+
+#### 如何防御
+
+对一些需要加密的敏感数据，起码要做到以下几点：
+
+* 应用对数据进行分类来进行数据的处理、存储或者传输。依照法律法规要求和商业需要，识别出哪些数据是敏感的。
+* 按应用的分类进行控制。
+* 只对必要的敏感信息进行存储。没必要的敏感数据应该尽快的销毁或者通过 PCI DSS 标记拦截。未存储的数据是不能被盗取的。
+* 确保加密所有存储中的敏感数据。
+* 确保及时更新和加强在使用中的标准算法、协议和密匙。使用恰当的密匙管理方法。
+* 使用例如 TLS 的技术来加密所有传输中的数据，确保数据加密被强制执行。如使用 HTTP 严格安全传输协议 HSTS。
+* 禁用包含敏感信息的响应缓存。
+* 使用拥有强大算法和加盐哈希方法的框架来存储密码。例如 [Argon2](https://www.cryptolux.org/index.php/Argon2)，[scrypt](https://wikipedia.org/wiki/Scrypt)，[bcrypt](https://wikipedia.org/wiki/Bcrypt) 或者 [PBKDF2](https://wikipedia.org/wiki/PBKDF2)。
+* 独立地验证配置文件和设置的有效性。
+
+#### 参考资料
+
+**OWASP**
+
+- [OWASP Proactive Controls: Protect Data](https://www.owasp.org/index.php/OWASP_Proactive_Controls#7:_Protect_Data)
+- [OWASP Application Security Verification Standard](https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project): [V7](https://www.owasp.org/index.php/ASVS_V7_Cryptography), [9](https://www.owasp.org/index.php/ASVS_V9_Data_Protection), [10](https://www.owasp.org/index.php/ASVS_V10_Communications)
+- [OWASP Cheat Sheet: Transport Layer Protection](https://www.owasp.org/index.php/Transport_Layer_Protection_Cheat_Sheet)
+- [OWASP Cheat Sheet: User Privacy Protection](https://www.owasp.org/index.php/User_Privacy_Protection_Cheat_Sheet)
+- [OWASP Cheat Sheet: Password](https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet) and [Cryptographic Storage](https://www.owasp.org/index.php/Cryptographic_Storage_Cheat_Sheet)
+- [OWASP Security Headers Project](https://www.owasp.org/index.php/OWASP_Secure_Headers_Project)
+- [OWASP Cheat Sheet: HSTS](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security_Cheat_Sheet)
+- [OWASP Testing Guide: Testing for weak cryptography](https://www.owasp.org/index.php/Testing_for_weak_Cryptography)
+
+**External**
+
+- [CWE-220: Exposure of sens. information through data queries](https://cwe.mitre.org/data/definitions/220.html)
+- [CWE-310: Cryptographic Issues](https://cwe.mitre.org/data/definitions/310.html)
+- [CWE-311: Missing Encryption](https://cwe.mitre.org/data/definitions/311.html)
+- [CWE-312: Cleartext Storage of Sensitive Information](https://cwe.mitre.org/data/definitions/312.html)
+- [CWE-319: Cleartext Transmission of Sensitive Information](https://cwe.mitre.org/data/definitions/319.html)
+- [CWE-326: Weak Encryption](https://cwe.mitre.org/data/definitions/326.html)
+- [CWE-327: Broken/Risky Crypto](https://cwe.mitre.org/data/definitions/327.html)
+- [CWE-359: Exposure of Private Information - Privacy Violation](https://cwe.mitre.org/data/definitions/359.html)
+
+
+
+
+
+
+
+
+
+
+
+
+
