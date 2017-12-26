@@ -89,7 +89,7 @@ http://example.com/app/accountView?id=' or '1'='1
 
 - [OWASP Proactive Controls: Parameterize Queries](https://www.owasp.org/index.php/OWASP_Proactive_Controls#2:_Parameterize_Queries)
 - [OWASP ASVS: V5 Input Validation and Encoding](https://www.owasp.org/index.php/ASVS_V5_Input_validation_and_output_encoding)
-- [OWASP Testing Guide: SQL Injection](https://www.owasp.org/index.php/Testing_for_SQL_Injection_(OTG-INPVAL-005)), [Command Injection](https://www.owasp.org/index.php/Testing_for_Command_Injection_(OTG-INPVAL-013)), [ORM injection](https://www.owasp.org/index.php/Testing_for_ORM_Injection_(OTG-INPVAL-007))
+- [OWASP Testing Guide: SQL Injection](https://www.owasp.org/index.php/Testing_for_SQL_Injection_%28OTG-INPVAL-005%29), [Command Injection](https://www.owasp.org/index.php/Testing_for_Command_Injection_%28OTG-INPVAL-013%29), [ORM injection](https://www.owasp.org/index.php/Testing_for_ORM_Injection_%28OTG-INPVAL-007%29)
 - [OWASP Cheat Sheet: Injection Prevention](https://www.owasp.org/index.php/Injection_Prevention_Cheat_Sheet)
 - [OWASP Cheat Sheet: SQL Injection Prevention](https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet)
 - [OWASP Cheat Sheet: Injection Prevention in Java](https://www.owasp.org/index.php/Injection_Prevention_Cheat_Sheet_in_Java)
@@ -238,14 +238,83 @@ http://example.com/app/accountView?id=' or '1'='1
 - [CWE-359: Exposure of Private Information - Privacy Violation](https://cwe.mitre.org/data/definitions/359.html)
 
 
+## A4-XML-外部实体-External-Entities
 
+> 许多使用老旧或者脆弱配置的 XML 处理器依赖了外部的 XML 文档。攻击者可以利用外部实体窃取内部文件 URI  地址、分享的文件、监听内部端口扫描、暴露内部文件、执行远程代码、或者实施拒绝服务等攻击。
 
+#### 威胁来源、弱点以及影响
 
+如果攻击者能够上传 XML 或者在 XML 文档中添加恶意内容，通过易受攻击的代码、依赖以及集合，他们就能够攻击利用脆弱的 XML 处理器。
 
+默认情况下，许多旧的 XML 处理器能够对外部实体、在处理过程中废弃或者被引用的 URI 进行规范。[SAST](https://www.owasp.org/index.php/Source_Code_Analysis_Tools) 工具能够察觉出依赖和配置所产生的问题。[DAST](https://www.owasp.org/index.php/Category:Vulnerability_Scanning_Tools) 工具需要额外的手动步骤来发现和解决上述问题。手动测试者们需要训练如何去测试 XXE，尽管在2017年 XXE 漏洞并不普遍。
 
+这个漏洞可以被用于窃取数据、从服务器执行远程服务、扫描内部系统、拒绝服务（denial-of-service）攻击，以及执行其他的攻击。
 
+#### 你的应用是脆弱的吗？
 
+应用，尤其是基于 XML 的 web 服务或者下游集成，如果包含以下这些内容，那就很容易被攻击：
 
+* 应用直接接收 XML 或者 XML 上传，尤其是不可信来源的资源，或者可以在 XML 文档中插入不可信数据，然后被传递给了 XML 处理器处理。
+* 应用或者基于 SOAP 的 web 服务中的任何 XML 处理器都启用了 [文档类型定义(DTDs)](https://en.wikipedia.org/wiki/Document_type_definition)。由于处理程序的功能不同，使用 DTD 处理的具体机制也不同，更多的参考资料，比如[OWASP Cheat Sheet 'XXE Prevention'](https://www.owasp.org/index.php/XML_External_Entity_%28XXE%29_Prevention_Cheat_Sheet)。
+* 如果应用为了安全性或者单点登录的目的而使用了 SAML 做身份认证。SAML 使用了 XML 做身份断言，这是很危险的做法。
+* 如果应用使用了低于 1.2 版本的 SOAP，一旦 XML 实体被传递到了 SOAP 框架中，这很容易遭受 XXE 攻击。
+* 易受到 XXE 攻击意味着应用程序更容易遭受拒绝服务供给，包括 Billion Laughs 攻击。
 
+#### 攻击案例场景
+
+许多公开的 XXE 问题已经被发觉了，包括攻击嵌入式设备。XXE 攻击一般发生在许多意想不到的地方，包括深度嵌套依赖关系。最简单的一种方法就是上传一个恶意的 XML 文件，一旦被接受：
+
+**例子一**：攻击者尝试获取服务器中的额外数据：
+
+```xml
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+  <!DOCTYPE foo [
+  <!ELEMENT foo ANY >
+  <!ENTITY xxe SYSTEM "file:///etc/passwd" >]>
+  <foo>&xxe;</foo>
+```
+
+**例子二**：攻击者通过改变上面的 ENTITY 来进入服务器的私有网络：
+
+```xml
+<!ENTITY xxe SYSTEM "https://192.168.1.1/private" >]>
+```
+
+**例子三**：攻击者尝试通过包含一个潜在无休止的文件来进行拒绝服务攻击：
+
+```xml
+<!ENTITY xxe SYSTEM "file:///dev/random" >]>
+```
+
+#### 如何防御
+
+培训开发者对于识别和缓解 XXE 攻击是至关重要的。除此之外，阻止 XXE 攻击需要：
+
+* 如果可能，使用低复杂度的数据格式，例如 JSON，并且避免敏感数据的串行化。
+* 更新或者升级所有 XML 处理器、正在使用的资料库和潜在可用的系统。使用依赖检测。升级 SOAP 到 1.2版本或者更高。
+* 在应用所有 XML 解析器中禁用 XML 外部实体以及 DTD 进程，参照 [OWASP Cheat Sheet 'XXE Prevention'](https://www.owasp.org/index.php/XML_External_Entity_%28XXE%29_Prevention_Cheat_Sheet)。
+* 实施积极的服务器端防御（白名单），在 XML 文档、头部或者节点中，对输入值进行验证、过滤和清理。
+* 验证 XML 或者 XSL 文件上传功能是否使用 XSD 验证或其他类似验证方法。
+* 虽然在许多集成环境中，手动代码 Review 是大型复杂应用的最佳选择，但是SAST 工具能够在代码层帮助预防 XXE 漏洞。
+
+如果无法实现这些控制手段，请考虑使用虚拟修复程序、API 安全网关或者防火墙来检测、架空和防止 XXE 攻击。
+
+#### 参考资料
+
+**OWASP**
+
+- [OWASP Application Security Verification Standard](https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project#tab.3DHome)
+- [OWASP Testing Guide: Testing for XML Injection](https://www.owasp.org/index.php/Testing_for_XML_Injection_%28OTG-INPVAL-008%29)
+- [OWASP XXE Vulnerability](https://www.owasp.org/index.php/XML_External_Entity_%28XXE%29_Processing)
+- [OWASP Cheat Sheet: XXE Prevention](https://www.owasp.org/index.php/XML_External_Entity_%28XXE%29_Prevention_Cheat_Sheet)
+- [OWASP Cheat Sheet: XML Security](https://www.owasp.org/index.php/XML_Security_Cheat_Sheet)
+
+**External**
+
+- [CWE-611: Improper Restriction of XXE](https://cwe.mitre.org/data/definitions/611.html)
+- [Billion Laughs Attack](https://en.wikipedia.org/wiki/Billion_laughs_attack)
+- [SAML Security XML External Entity Attack](https://secretsofappsecurity.blogspot.tw/2017/01/saml-security-xml-external-entity-attack.html)
+- [Detecting and exploiting XXE in SAML Interfaces](https://web-in-security.blogspot.tw/2014/11/detecting-and-exploiting-xxe-in-saml.html)
 
 
