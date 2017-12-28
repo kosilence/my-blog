@@ -318,3 +318,65 @@ http://example.com/app/accountView?id=' or '1'='1
 - [Detecting and exploiting XXE in SAML Interfaces](https://web-in-security.blogspot.tw/2014/11/detecting-and-exploiting-xxe-in-saml.html)
 
 
+## A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities
+
+> 组件，例如库、框架或者其他软件模块，运行时使用了与应用相同的特权。如果一个滥用包含缺陷的组件，受到攻击可能会造成严重的数据丢失或者服务接管。使用包含已知漏洞组件的应用程序和 APIs 可能会降低应用防御力并且受到不同攻击影响。
+
+#### 威胁来源、弱点以及影响
+
+尽管我们很容易发现已知的漏洞，但是其他漏洞仍然需要定制性地开发。
+
+这个漏洞是普遍存在的。重组件的开发模式可能会使开发团队在无法完全了解组件的情况下而应用在他们的程序或者 API 中，更别说去及时更新他们了。许多扫描工具例如 `retire.js` 为察觉漏洞提供帮助，但是这需要额外的时间去研究这类漏洞是否可以被利用。
+
+虽然很多已知的漏洞只导致了很小的影响，迄今为止有一些巨大的违规操作都依赖于利用组件中已知的漏洞。考虑到你要保护的资产情况，也许这个漏洞风险是这个列表中最重要的。
+
+#### 你的应用是脆弱的吗？
+
+以下这些，看一看：
+
+* 如果你不知道你所使用的组件是哪个版本（客户端或者服务端）。这包括你直接使用的组件所嵌套依赖的那些组件们。
+* 如果软件易受攻击、不被支持、或者过时。这包括 OS、web 和应用服务、数据库管理系统、应用程序、APIs 和所有组件、线上环境以及库。
+* 如果你没有定期扫描漏洞或者订阅你所使用组件的安全报告。
+* 如果你没有基于风险及时地解决或者升级基础平台、框架和依赖们。很可能会发生这种情况：补丁被控制在月度或者年度更新，使得组织在这段时间内会受到已修复但未打补丁的漏洞的威胁。
+* 如果软件开发者没有测试更新、升级或者补丁库的兼容性。
+* 如果你没有对组件进行安全配置。例如[A6-安全配置错误-Security-Misconfiguration](#A6-安全配置错误-Security-Misconfiguration)
+
+#### 攻击案例场景
+
+**例子一**：组件通常运行在与应用程序相同特权的情况下，所以任何组件中的漏洞均能够导致严重的影响。这种漏洞可能是无意的（写代码写错了）或者有意的（组件有后门）。下面是一些被发现的组件漏洞：
+
+* [CVE-2017-5638](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5638)，`Struts 2` 的远程执行漏洞允许在服务器端执行任意代码，被谴责为重大违规操作。
+* 虽然 [internet of things (IoT)](https://en.wikipedia.org/wiki/Internet_of_things) 漏洞经常很难或者不可能通过补丁被修复，但是补丁对于它们的意义是重大的（例如：医疗设备）。
+
+有一些自动化工具能够帮助攻击者发现未打补丁或者缺少配置的系统。例如 [Shodan IoT search engine](https://www.shodan.io/report/89bnfUyJ) 能够帮你发现2014年4月至今仍在遭受 [Heartbleed](https://en.wikipedia.org/wiki/Heartbleed) 漏洞的设备。
+
+#### 如何防御
+
+应该拥有一个补丁管理程序：
+
+* 移除没使用的依赖，不必要的功能、组件、文件和文档。
+* 持续更新客户端和服务端的组件版本和他们的依赖，例如框架和库文件。并且合理利用 `versions、DependencyCheck、retire.js` 等工具。
+* 持续利用例如 `CVE、NVD` 源代码工具来监控组件漏洞。使用软件构成分析工具来自动处理。订阅你所使用组件有关安全漏洞的邮件提醒。
+* 只从官方源而不是安全连接来获取组件。倾向于使用签名过的包来减少使用被修改或者怀有恶意的组件。
+* 监控那些被放弃维护或者没有为旧版本创建安全补丁的库文件和组件。如果补丁不再可用，那么考虑部署一个虚拟补丁来监控、检测或者保护被发现的问题。
+
+每一个组织必须确保有一个正在进行的计划，为生命周期内的应用程序进行监控、测试并应用更新或者更新配置。
+
+#### 参考资料
+
+**OWASP**
+
+- [OWASP Application Security Verification Standard: V1 Architecture, design and threat modelling](https://www.owasp.org/index.php/ASVS_V1_Architecture)
+- [OWASP Dependency Check (for Java and .NET libraries)](https://www.owasp.org/index.php/OWASP_Dependency_Check)
+- [OWASP Testing Guide - Map Application Architecture (OTG-INFO-010)](https://www.owasp.org/index.php/Map_Application_Architecture_%28OTG-INFO-010%29)
+- [OWASP Virtual Patching Best Practices](https://www.owasp.org/index.php/Virtual_Patching_Best_Practices)
+
+**External**
+
+- [The Unfortunate Reality of Insecure Libraries](https://www.aspectsecurity.com/research-presentations/the-unfortunate-reality-of-insecure-libraries)
+- [MITRE Common Vulnerabilities and Exposures (CVE) search](https://www.cvedetails.com/version-search.php)
+- [National Vulnerability Database (NVD)](https://nvd.nist.gov/)
+- [Retire.js for detecting known vulnerable JavaScript libraries](https://github.com/retirejs/retire.js/)
+- [Node Libraries Security Advisories](https://nodesecurity.io/advisories)
+- [Ruby Libraries Security Advisory Database and Tools](https://rubysec.com/)
+
