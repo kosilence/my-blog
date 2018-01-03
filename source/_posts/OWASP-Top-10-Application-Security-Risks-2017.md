@@ -318,6 +318,87 @@ http://example.com/app/accountView?id=' or '1'='1
 - [Detecting and exploiting XXE in SAML Interfaces](https://web-in-security.blogspot.tw/2014/11/detecting-and-exploiting-xxe-in-saml.html)
 
 
+## A5-失效的访问控制-Broken-Access-Control
+
+> 通过认证限制用户被允许去做什么经常没有合理的执行。攻击者能够利用这些漏洞获取未授权的功能或者数据，比如获取用户的账号信息、浏览敏感文件、修改其他用户的信息、修改进入权限等等。
+
+#### 威胁来源、弱点以及影响
+
+利用访问控制是攻击者的核心技能。[SAST](https://www.owasp.org/index.php/Source_Code_Analysis_Tools) 和 [DAST](https://www.owasp.org/index.php/Category:Vulnerability_Scanning_Tools) 工具能够发现访问控制的缺失，但是不能验证其功能是否正常。访问控制可以通过手动的方式检测，或者在某些特定框架下通过自动化检测访问控制缺失。
+
+访问控制漏洞一般是由缺乏自动检测机制，或者开发者没有完善有效的功能测试。访问控制通常不适合自动化的静态或者动态测试。手动测试是一种最好的方式来查明丢失或者失效的访问控制，包括 HTTP 方法、控制器、直接对象引用等等。
+
+技术方面的影响是攻击者可以假装用户、管理员或者拥有特权函数的用户，或者创建、访问、更新或者删除任何记录。业务影响取决于应用和数据的保护需要性。
+
+#### 你的应用时脆弱的吗？
+
+访问控制强制实施策略，例如用户不能在预期权限之外执行操作。失败通常导致未被授权的信息泄露、修改或者破坏所有数据、或在用户权限之外执行业务功能。常见的访问控制脆弱点包括：
+
+* 可以通过修改 URL、内部应用状态、HTML 页面来绕过访问控制检查，或者简单使用外部 API 攻击工具。
+* 允许将主键被修改为另一个用户的记录，例如允许浏览或者编辑其他人的账号。
+* 特权提升。未登录状态下伪装为一个用户，或者一个普通用户伪装成管理员。
+* 篡改元数据，例如重放或者篡改 JWT 访问控制令牌，或者利用提升权限的 cookie 或隐藏字段。
+* CORS 错误配置导致允许未授权的 API 访问。
+* 以未认证的用户身份去强制浏览需要认证的页面，或者普通身份去浏览特权网页。在 API 访问控制中没有对 POST\PUT\DELETE	做访问控制。
+
+
+#### 攻击案例场景
+
+**例子一**：应用程序在一次访问用户账户信息的 SQL 请求中使用未经验证的数据：
+
+```Sql
+pstmt.setString(1, request.getParameter("acct"));
+ResultSet results = pstmt.executeQuery( );
+```
+
+攻击者简单的在浏览器中修改了 `acct` 参数，来发送他们想要的任何账户号码。如果没有正确的去验证，那么攻击者可以获取任何用户的账户信息。
+
+```
+http://example.com/app/accountInfo?acct=notmyacct
+```
+
+**例子二**：攻击者强制浏览器访问目标地址，那些需要管理员权限才能访问到的页面。
+
+```
+http://example.com/app/getappInfo
+http://example.com/app/admin_getappInfo
+```
+
+如果一个未认证的用户可以访问到这些页面，就是一个漏洞。如果一个非管理员能够访问到管理页面，那这也是一个漏洞。
+
+#### 如何防御
+
+访问控制只有在受信服务器端代码或者没有服务器的 API 中生效，这样攻击者才不能修改访问控制检查或者元数据。
+
+* 除公共资源以外，应该默认拒绝访问。
+* 实行一次性的访问控制机制，在应用程序中重点利用他们，包括减少 CORS 的使用。
+* 模块访问权限应该强制记录其所有权，而不是接受任何用户能够创建、读取、更新或者删除任何记录。
+* 独特的应用程序业务限制需求应该由域模型来执行。
+* 禁用 web 服务目录列表并且确保文件源文件（例如 `.git` ）和备份文件不出现在 web 根目录下。
+* 记录访问控制中的失败记录，在适当的时候提醒管理员。
+* 对 API 和控制器访问频率进行限制，来尽量减少自动化攻击工具带来的伤害。
+* JWT 令牌应该在用户登出的时候被弃用。
+
+开发者和测试人员应该包括功能访问控制单元以及集成测试。
+
+#### 参考资料
+
+**OWASP**
+
+- [OWASP Proactive Controls: Access Controls](https://www.owasp.org/index.php/OWASP_Proactive_Controls#6:_Implement_Access_Controls)
+- [OWASP Application Security Verification Standard: V4 Access Control](https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project#tab.3DHome)
+- [OWASP Testing Guide: Authorization Testing](https://www.owasp.org/index.php/Testing_for_Authorization)
+- [OWASP Cheat Sheet: Access Control](https://www.owasp.org/index.php/Access_Control_Cheat_Sheet)
+
+**External**
+
+- [CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')](https://cwe.mitre.org/data/definitions/22.html)
+- [CWE-284: Improper Access Control (Authorization)](https://cwe.mitre.org/data/definitions/284.html)
+- [CWE-285: Improper Authorization](https://cwe.mitre.org/data/definitions/285.html)
+- [CWE-639: Authorization Bypass Through User-Controlled Key](https://cwe.mitre.org/data/definitions/639.html)
+- [PortSwigger: Exploiting CORS misconfiguration](https://portswigger.net/blog/exploiting-cors-misconfigurations-for-bitcoins-and-bounties)
+
+
 ## A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities
 
 > 组件，例如库、框架或者其他软件模块，运行时使用了与应用相同的特权。如果一个滥用包含缺陷的组件，受到攻击可能会造成严重的数据丢失或者服务接管。使用包含已知漏洞组件的应用程序和 APIs 可能会降低应用防御力并且受到不同攻击影响。
