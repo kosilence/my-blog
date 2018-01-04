@@ -339,7 +339,7 @@ http://example.com/app/accountView?id=' or '1'='1
 * 特权提升。未登录状态下伪装为一个用户，或者一个普通用户伪装成管理员。
 * 篡改元数据，例如重放或者篡改 JWT 访问控制令牌，或者利用提升权限的 cookie 或隐藏字段。
 * CORS 错误配置导致允许未授权的 API 访问。
-* 以未认证的用户身份去强制浏览需要认证的页面，或者普通身份去浏览特权网页。在 API 访问控制中没有对 POST\PUT\DELETE	做访问控制。
+  * 以未认证的用户身份去强制浏览需要认证的页面，或者普通身份去浏览特权网页。在 API 访问控制中没有对 POST\PUT\DELETE做访问控制。
 
 
 #### 攻击案例场景
@@ -398,6 +398,70 @@ http://example.com/app/admin_getappInfo
 - [CWE-639: Authorization Bypass Through User-Controlled Key](https://cwe.mitre.org/data/definitions/639.html)
 - [PortSwigger: Exploiting CORS misconfiguration](https://portswigger.net/blog/exploiting-cors-misconfigurations-for-bitcoins-and-bounties)
 
+
+## A6-安全配置错误-Security-Misconfiguration
+
+> 安全错误配置是最普遍常见的一种问题。这是一般是由于不安全的默认配置、不完全或临时的配置、开放的云存储、错误配置的 HTTP 头部以及多余的错误信息包含了敏感信息。不仅仅是需要所有的操作系统、框架、库和应用程序都要安全配置，而且必须及时的更新和补丁他们。
+
+#### 威胁来源、弱点以及影响
+
+攻击者们经常企图利用未修补的漏洞或者访问默认账户、未启用的页面、没有保护的文件和目录等等，来获取未授权的访问权限或者系统内部信息。
+
+安全配置错误可能发生在应用程序的任何层面，包括网络服务、平台、Web 服务、应用服务、数据库、框架、客户代码以及预安装的虚拟机器、容器或存储中。自动扫描工具可以很容易发现配置错误，使用默认账户或者配置，不必须的服务、遗留的选项等等。
+
+这样的漏洞频繁的给予攻击者未认证的权限去访问一些系统数据或者功能。偶尔，这些漏洞可能导致系统完全被攻破。业务受影响的程度取决于所保护的应用及数据的重要性。
+
+#### 你的应用是脆弱的吗？
+
+应用程序可能是脆弱的，如果你有以下这些问题：
+
+* 在应用程序栈的各个部分都缺少对应的安全加强措施，或者在云服务中不恰当的权限配置。
+* 非必需的功能被投入使用或者被安装，例如不必须的端口、服务、页面、账户或者特权。
+* 默认账户以及密码仍然被使用，并且没有被修改。
+* 错误处理显示堆栈追踪或者将其他拥有过多信息的错误提醒发送给用户。
+* 对于升级过的系统，没有启用最新的安全功能或者没有被正确配置。
+* 应用程序服务、应用框架（例如：`Struts/Spring/ASP.NET` ）、库、数据库等，没有将他们的安全设置配置为可靠的参数。
+* 软件过时以及易受攻击的。见：[A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities](#A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities)
+
+#### 攻击案例场景
+
+**例子一**：应用服务附带了未从服务中移除的应用程序样例。这些样例应用程序具有已知的安全漏洞，攻击者利用这些漏洞来攻击服务器。如果其中一个是管理员控制台，并且默认账户没有被更改，攻击者可以通过默认密码登录以及劫持服务。
+
+**例子二**：服务器没有禁用目录列表。攻击者发现他们可以简单的列出所有目录。攻击者发现并且下载所有已编译的 JAVA 类，然后反编译来查看代码。攻击者进而可以发现应用程序中的安全访问控制漏洞。
+
+**例子三**：应用程序服务器端的配置允许把详细的错误信息（例如堆栈跟踪）返回给用户。这可能会暴露敏感信息或者潜在的漏洞，例如已知含有漏洞组件的版本信息。
+
+**例子四**：云服务器向其他 CSP 用户提供默认打开的网络分享权限。这允许了可访问到的云存储中敏感信息被盗用。
+
+#### 如何防御
+
+应该实施安全的安装过程，包括：
+
+* 拥有一个可重复使用并且可靠的程序，可以快速并且简单的部署另一个安全的运行环境。开发、测试以及生产环境应该都被独立配置，在不同的环境中使用不同的密匙。这个程序应该是自动化的，最大限度的减少安装一个新的安全环境的消耗。
+* 最小化的平台，没有任何不必须的功能、组件、文档以及示例。移除或者从不安装不使用的功能或者框架。
+* 将审查和升级配置合理的记录到所有的安全提醒中，将升级和修补作为运维管理的一部分。还应特别注意云存储权限。
+* 一个能在组件和用户间提供有效的分离和安全性的分段应用程序架构，包括：分段、容器化和云安全组。
+* 向客户端发送安全指令，例如：[Security Headers](https://www.owasp.org/index.php/OWASP_Secure_Headers_Project) 。
+* 设置一个自动化的程序去验证所有环境中配置文件和设置的有效性。
+
+#### 参考资料
+
+**OWASP**
+
+- [OWASP Testing Guide: Configuration Management](https://www.owasp.org/index.php/Testing_for_configuration_management)
+- [OWASP Testing Guide: Testing for Error Codes](https://www.owasp.org/index.php/Testing_for_Error_Code_%28OWASP-IG-006%29)
+- [OWASP Security Headers Project](https://www.owasp.org/index.php/OWASP_Secure_Headers_Project)
+
+For additional requirements in this area, see the Application Security Verification Standard [V19 Configuration](https://www.owasp.org/index.php/ASVS_V19_Configuration).
+
+**External**
+
+- [NIST Guide to General Server Hardening](https://csrc.nist.gov/publications/detail/sp/800-123/final)
+- [CWE-2: Environmental Security Flaws](https://cwe.mitre.org/data/definitions/2.html)
+- [CWE-16: Configuration](https://cwe.mitre.org/data/definitions/16.html)
+- [CWE-388: Error Handling](https://cwe.mitre.org/data/definitions/388.html)
+- [CIS Security Configuration Guides/Benchmarks](https://www.cisecurity.org/cis-benchmarks/)
+- [Amazon S3 Bucket Discovery and Enumeration](https://blog.websecurify.com/2017/10/aws-s3-bucket-discovery.html)
 
 ## A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities
 
