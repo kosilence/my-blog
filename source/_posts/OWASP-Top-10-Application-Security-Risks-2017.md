@@ -463,6 +463,12 @@ For additional requirements in this area, see the Application Security Verificat
 - [CIS Security Configuration Guides/Benchmarks](https://www.cisecurity.org/cis-benchmarks/)
 - [Amazon S3 Bucket Discovery and Enumeration](https://blog.websecurify.com/2017/10/aws-s3-bucket-discovery.html)
 
+## A7-跨站脚本-Cross-Site-Scripting
+
+> 当在新的页面打开应用程序，如果包含了没有经过适当的验证或编码的不可信数据，或者使用可以创建 HTML 或 JavaScript 的浏览器 API 更新现有的网页时，就可能会发生跨站脚本攻击。 XSS 让攻击者能够在受害者的浏览器中执行脚本，并劫持用户会话、破坏网站或者将用户重定向至恶意站点。
+
+
+
 ## A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities
 
 > 组件，例如库、框架或者其他软件模块，运行时使用了与应用相同的特权。如果一个滥用包含缺陷的组件，受到攻击可能会造成严重的数据丢失或者服务接管。使用包含已知漏洞组件的应用程序和 APIs 可能会降低应用防御力并且受到不同攻击影响。
