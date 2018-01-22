@@ -535,6 +535,79 @@ foo='+document.cookie</script>'.
 - [CWE-79: Improper neutralization of user supplied input](https://cwe.mitre.org/data/definitions/79.html)
 - [PortSwigger: Client-side template injection](https://portswigger.net/kb/issues/00200308_clientsidetemplateinjection)
 
+## A8-不安全的反序列化-Insecure-Deserialization
+
+> 不安全的反序列化时常导致远程代码执行。即使反序列化漏洞没有导致远程代码执行，也可能被用作执行攻击，包括重放攻击、注入攻击或者特权提升攻击。
+
+#### 威胁来源、弱点以及影响
+
+利用反序列化稍微有点困难，因为在不更改或者调整底层可被利用代码的情况下，货架漏洞很少起作用。
+
+这一问题包括在 Top 10 的行业调查中，而不是基于可量化的数据。有些工具可以用来发现反序列化漏洞，但是需要频繁的人工来验证这些问题。期待有关反序列化漏洞的普遍性数据能够随着工具的开发而更多的被识别和定位。
+
+反序列化漏洞的影响不应该被夸大。这些漏洞会导致远程代码执行攻击，这是可能是最严重的攻击之一。业务受到的影响取决于被保护的应用和数据的关键性。
+
+#### 你的应用是脆弱的吗？
+
+关于应用程序和 APIs，如果他们对攻击者提供的恶意或篡改过的对象进行了反序列化，那他们就是脆弱的。这可能导致两种主要类型的攻击：
+
+* 如果对象和数据结构可以在反序列化过程中或者之后改变类的行为，那么攻击者可以通过修改应用程序逻辑或者实现任意远程代码攻击。我们将之成为对象和数据结构攻击。
+* 典型的数据篡改攻击，例如访问控制相关的攻击，其中使用了现有的数据结构，但是内容被更改。
+
+在应用程序中序列化可被用作：
+
+* 远程和进程间通信（RPC/IPC）
+* 连线协议，web 服务，信息中转
+* 缓存/持久性
+* 数据库，缓存服务，文件系统
+* HTTP cookies，HTML 表单参数，API 认证凭证
+
+#### 攻击案例场景
+
+**例子一**： 一个 React 应用调用了一个 Spring Boot 的微服务。作为函数化编程，他们试图确保代码是不可改动的。他们提出的解决办法是将用户的状态序列化，并在每次请求中传递给服务端。攻击者注意到 "R00" Java 对象签名，然后使用 Java Serial Killer 工具在应用程序服务端来执行远程代码。
+
+**例子二**： 一个 PHP 论坛使用 PHP 对象序列化来存储 "super" 身份 cookie， 包含了用户的 ID，身份，密码哈希，以及其他状态：
+
+```php
+a:4:{i:0;i:132;i:1;s:7:"Mallory";i:2;s:4:"user"; i:3;s:32:"b6a8b3bea87fe0e05022f8f3c88bc960";}
+```
+
+攻击者通过修改序列化的对象来窃取管理者权限：
+
+```php
+a:4:{i:0;i:1;i:1;s:5:"Alice";i:2;s:5:"admin";
+i:3;s:32:"b6a8b3bea87fe0e05022f8f3c88bc960";}
+```
+
+#### 如何防御
+
+唯一安全的架构模式就是不接受来自不可信来源的序列化对象，或使用只允许原始数据类型的序列化媒体。
+
+如果上述不太可能实现的的话，考虑一下方法：
+
+* 执行完整性检查，如：任何序列化对象的数字签名，以防止恶意独享创建和数据篡改。
+* 在创建对象之前强制执行严格的数据约束，因为代码常常被期望成一组可定义的类。绕过这种技术的方法已经被证明，随意完全依赖它是不可取的。
+* 如果可能，隔离运行那些在低特权环境中反序列化的代码。
+* 记录反序列化的例外情况和失败信息，如：传入的类型不是预期的类型，或者反序列化处理引发的例外情况。
+* 限制或监视来自于容器和服务器传入和传出的反序列化网络连接。
+* 监控反序列化，当用户持续继续进行反序列化时，对用户进行警告。
+
+#### 参考资料
+
+**OWASP**
+
+- [OWASP Cheat Sheet: Deserialization](https://www.owasp.org/index.php/Deserialization_Cheat_Sheet)
+- [OWASP Proactive Controls: Validate All Inputs](https://www.owasp.org/index.php/OWASP_Proactive_Controls#4:_Validate_All_Inputs)
+- [OWASP Application Security Verification Standard](https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project#tab.3DHome)
+- [OWASP AppSecEU 2016: Surviving the Java Deserialization Apocalypse](https://speakerdeck.com/pwntester/surviving-the-java-deserialization-apocalypse)
+- [OWASP AppSecUSA 2017: Friday the 13th JSON Attacks](https://speakerdeck.com/pwntester/friday-the-13th-json-attacks)
+
+**External**
+
+- [CWE-502: Deserialization of Untrusted Data](https://cwe.mitre.org/data/definitions/502.html)
+- [Java Unmarshaller Security](https://github.com/mbechler/marshalsec)
+- [OWASP AppSec Cali 2015: Marshalling Pickles](http://frohoff.github.io/appseccali-marshalling-pickles/)
+
 ## A9-使用含有已知漏洞的组件-Using-Components-with-Known-Vulnerabilities
 
 > 组件，例如库、框架或者其他软件模块，运行时使用了与应用相同的特权。如果一个滥用包含缺陷的组件，受到攻击可能会造成严重的数据丢失或者服务接管。使用包含已知漏洞组件的应用程序和 APIs 可能会降低应用防御力并且受到不同攻击影响。
