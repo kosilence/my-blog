@@ -670,3 +670,63 @@ i:3;s:32:"b6a8b3bea87fe0e05022f8f3c88bc960";}
 - [Node Libraries Security Advisories](https://nodesecurity.io/advisories)
 - [Ruby Libraries Security Advisory Database and Tools](https://rubysec.com/)
 
+
+## A10-不足的日志记录和监控-Insufficient_Logging&Monitoring
+
+> 不足的日志记录和监控，再加上丢失或者失效地集成在事故响应中，使得攻击者可以更进一步的攻击系统、保持持续性或转向更多的系统，然后篡改、窃取或者破坏数据。大多数的破坏研究显示：漏洞被检测出来的时间超过 200 天，通常是由外部检测方检测，而不是通过内部流程或监控检测。
+
+#### 威胁来源、弱点以及影响
+
+不足的日志记录和监控被利用几乎是所有大型事故的起因。攻击者依赖监控和及时响应的缺失，在不被察觉的情况下达到他们的目的。
+
+这个漏洞之所以会被列为 Top 10，主要基于[行业调查](https://owasp.blogspot.com/2017/08/owasp-top-10-2017-project-update.html)。其中一个策略：在渗透测试之后仔细检查日志，以此来判断你是否拥有足够的监控。测试者行为应该被全面的记录，用来解析他们可能破坏的内容。
+
+大多数成功的攻击开始于漏洞调查。允许持续性的漏洞调查会使得利用此漏洞的可能性无限接近 100%。在 2016 年，据统计确定一起数据泄露事件平均需要花费 191 天时间，这么长的反应时间里破坏早已经发生了。
+
+#### 你的应用时脆弱的吗？
+
+不足的日志记录、检测、监控以及积极响应发生在这些这些时候：
+
+* 可评估的事件，例如登录、登录失败、高价值交易没有被日记记录。
+* 警告或者错误没有生成或者生成了不充分、不清晰的日志信息。
+* 应用程序或 APIs 的日志没有监控可疑的行为。
+* 只把日志存储在本地。
+* 适当的报警阈值和响应升级流程没有被正确的设置或者开启。
+* 利用 [DAST](https://www.owasp.org/index.php/Category:Vulnerability_Scanning_Tools) 工具进行渗透测试和扫描没有触发警告。
+* 应用程序无法实时或者接近实时的检测、处理和告警。
+
+如果你的应用使得日志信息或告警信息对用户或者攻击者可见，你就很容易受到信息泄露攻击。
+
+#### 攻击案例场景
+
+**例子一**：一个由规模较小的团队运行的开源论坛软件，攻击者利用软件里存在的漏洞进行攻击。攻击者设法删除了包含下一个版本的内部源代码仓库以及所有论坛内容。尽管可以被恢复，缺乏监视、日志记录或警报会导致更糟糕的结果。由于此问题，该论坛软件不再那么活跃了。
+
+**例子二**：攻击者使用一些常见的密码来扫描用户账户。他们可以接管所有使用这个密码的账户。对于其他用户来说，扫描活动仅仅产生了一次登录错误。一些日子之后，攻击者可能用另一个密码再次进行此活动。
+
+**例子三**：据报道，美国一家大型零售商使用了一个内部恶意软件分析沙盒做业务分析。沙盒软件检测到了一些可能不需要的软件，但没有人响应检测结果。在一个境外银行不正当的信用卡交易被检测到之前，这个沙盒软件一直在产生告警信息。
+
+#### 如何防御
+
+根据应用程序存储或处理的数据风险：
+
+* 确保所有登陆、访问控制晒白、输入验证失败能够被记录到日志中去，并保留足够的用户上下文信息，以识别可疑或恶意账户，并为后期取证预留足够时间。
+* 确保日志以一种能够被集中日志管理解决方案使用的形式生成。
+* 确保高额度交易有完整性控制的审计信息，以防止篡改或删除，例如审计信息保存在只能进行记录增加的数据库中。
+* 建立有效的监控和告警机制，是可以活动在可接受的时间内被发现和响应。
+* 建立或采取一个应急响应和恢复机制。
+
+目前已有商业的和开源的应用程序防护框架、Web 应用防火墙、带有自定义仪表盘和告警功能的日志关联软件。
+
+#### 参考资料
+
+**OWASP**
+
+- [OWASP Proactive Controls: Implement Logging and Intrusion Detection](https://www.owasp.org/index.php/OWASP_Proactive_Controls#8:_Implement_Logging_and_Intrusion_Detection)
+- [OWASP Application Security Verification Standard: V8 Logging and Monitoring](https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project#tab.3DHome)
+- [OWASP Testing Guide: Testing for Detailed Error Code](https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project#tab.3DHome)
+- [OWASP Cheat Sheet: Logging](https://www.owasp.org/index.php/Logging_Cheat_Sheet)
+
+**External**
+
+- [CWE-223: Omission of Security-relevant Information](https://cwe.mitre.org/data/definitions/223.html)
+- [CWE-778: Insufficient Logging](https://cwe.mitre.org/data/definitions/778.html)
