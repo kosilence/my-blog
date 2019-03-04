@@ -3,16 +3,16 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Cosin.tk | kosilence's blog
+title: kosilence.com | Blog
 subtitle: Work && Life Record
-description: A Web Front End Engineer's Blog| 一个Web前端工程师的博客 | kosilence's blog
+description: A Web Full Stack Engineer's Blog| 一个 Web 全栈工程师的博客 | kosilence's blog
 author: kosilence
 language: zh-Hans
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://blog.cosin.tk
+url: http://blog.kosilence.com
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -65,10 +65,10 @@ pagination_dir: page
 ## Themes: https://hexo.io/themes/
 theme: my-apollo
 archive_generator:
-    per_page: 0
-    yearly: false
-    monthly: false
-    daily: false
+  per_page: 0
+  yearly: false
+  monthly: false
+  daily: false
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
